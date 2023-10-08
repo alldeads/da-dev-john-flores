@@ -15,7 +15,7 @@ class TodoController extends Controller
      */
     public function index(Request $request)
     {
-        $todos = Todo::all();
+        $todos = Todo::withTrashed()->orderBy('is_completed', 'asc')->orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'todos' => $todos
@@ -54,6 +54,8 @@ class TodoController extends Controller
         if (!$todo) {
             return response()->json(['message' => 'Todo not found'], 404);
         }
+
+        $todo->update(['is_completed' => 1]);
 
         $todo->delete();
         
