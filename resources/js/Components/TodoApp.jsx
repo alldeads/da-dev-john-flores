@@ -6,6 +6,7 @@ function TodoApp() {
     const [todos, setTodos] = useState([]);
     const [newTodo, setNewTodo] = useState('');
     const [selectedTab, setSelectedTab] = useState('all');
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         fetchTodos();
@@ -17,9 +18,19 @@ function TodoApp() {
     };
 
     const addTodo = async () => {
-        await axios.post('/api/todos', { description: newTodo });
-        setNewTodo('');
-        fetchTodos();
+        try {
+            await axios.post('/api/todos', { description: newTodo });
+            setNewTodo('');
+            fetchTodos();
+
+            setMessage('TODO added successfully.');
+
+            setTimeout(() => {
+                setMessage('');
+            }, 5000);
+        } catch (error) {
+            setMessage(error);
+        }
     };
 
     const handleDeleteTodo = async (id) => {
@@ -28,6 +39,15 @@ function TodoApp() {
             fetchTodos();
         } catch (error) {
             console.error('Error deleting todo:', error);
+        }
+    };
+
+    const markTodoComplete = async (id) => {
+        try {
+            await axios.put(`/api/todos/${id}`, { is_completed: true });
+            fetchTodos();
+        } catch (error) {
+            console.error('Error marking todo as complete:', error);
         }
     };
 
@@ -67,6 +87,8 @@ function TodoApp() {
                 </div>
             </div>
 
+            {message && <p className="text-green-500 mb-5 ">{message}</p>}
+
             <div className='flex'>
                 <input 
                     type="text" 
@@ -87,7 +109,12 @@ function TodoApp() {
             <div>
                 <ul role="list" className="divide-y divide-gray-100">
                     {filterTodos().map((todo) => (
-                        <TodoItem key={todo.id} todo={todo} handleDeleteTodo={handleDeleteTodo}/>
+                        <TodoItem 
+                            key={todo.id} 
+                            todo={todo} 
+                            handleDeleteTodo={handleDeleteTodo}
+                            markTodoComplete={markTodoComplete} 
+                        />
                     ))}
                 </ul>
             </div>

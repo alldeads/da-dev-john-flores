@@ -41,7 +41,11 @@ class TodoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $todo = Todo::withTrashed()->find($id);
+
+        $todo->update(['is_completed' => true]);
+
+        return response()->json(['message' => 'Todo marked as completed.']);
     }
 
     /**
