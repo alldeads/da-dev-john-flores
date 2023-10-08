@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Todo;
 
+use App\Http\Requests\CreateTodoRequest;
+
 class TodoController extends Controller
 {
     /**
@@ -23,35 +25,15 @@ class TodoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateTodoRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-        ]);
-    
         $todo = new Todo([
-            'title' => $request->input('title'),
+            'description' => $request->input('description'),
         ]);
     
         $todo->save();
     
         return response()->json(['message' => 'Todo created successfully'], 201);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 
     /**
@@ -73,12 +55,8 @@ class TodoController extends Controller
             return response()->json(['message' => 'Todo not found'], 404);
         }
 
-        if ($todo->trashed()) {
-            $todo->forceDelete(); // Permanently delete if already soft deleted
-            return response()->json(['message' => 'Todo permanently deleted']);
-        } else {
-            $todo->delete(); // Soft delete
-            return response()->json(['message' => 'Todo soft deleted']);
-        }
+        $todo->delete();
+        
+        return response()->json(['message' => 'Todo soft deleted']);
     }
-    }
+}

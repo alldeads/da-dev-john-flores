@@ -15,7 +15,7 @@ function TodoApp() {
     };
 
     const addTodo = async () => {
-        await axios.post('/api/todos', { title: newTodo });
+        await axios.post('/api/todos', { description: newTodo });
         setNewTodo('');
         fetchTodos();
     };
@@ -35,7 +35,7 @@ function TodoApp() {
             </div>
             <ul>
                 {todos.map((todo) => (
-                    <li key={todo.id}>{todo.title}</li>
+                    <li key={todo.id}>{todo.description}</li>
                 ))}
             </ul>
         </div>
